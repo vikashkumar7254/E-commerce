@@ -6,17 +6,33 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ecom.dao.SellerDAO;
 import com.ecom.dto.SellerDTO;
+import com.ecom.dto.SessionDTO;
+import com.ecom.exception.LoginException;
 import com.ecom.exception.SellerException;
 import com.ecom.model.Seller;
+import com.ecom.model.SellerSession;
 import com.ecom.repository.SellerRepository;
+import com.ecom.repository.SessionRepository;
 
 @Service
 public class SellerServiceImpl implements SellerService {
 
 	@Autowired
 	private SellerRepository sellerRepository;
-	
+
+	@Autowired
+	private LoginLogoutService loginLogoutService;
+
+	@Autowired
+	private SellerDAO sellerDao;
+
+	@Autowired
+	private SessionRepository sessionRepository;
+
+	private SellerDAO sessionDao;
+
 	@Override
 	public Seller addSeller(Seller seller) {
 
@@ -48,18 +64,25 @@ public class SellerServiceImpl implements SellerService {
 	}
 
 	@Override
-	public Seller getSellerByMobile(String mobile, String Token) throws SellerException {
-		if(Token.contains("seller")) {
-			
+	public Seller getSellerByMobile(String mobile, String token) throws SellerException {
+		if (token.contains("seller") == false) {
+			throw new LoginException("Invalid session token for seller");
 		}
-		
-		
-		return null;
+		loginLogoutService.checkTokenStatus(token);
+		Seller existingseller = sellerRepository.findByMobile(mobile)
+				.orElseThrow(() -> new SellerException("Seller not found by given number"));
+		return existingseller;
 	}
 
 	@Override
 	public Seller getCurrentlyLoggedInSeller(String token) throws SellerException {
-		// TODO Auto-generated method stub
+		if (token.contains("seller") == false) {
+			throw new LoginException("invalid session token for seller");
+		}
+		loginLogoutService.checkTokenStatus(token);
+		SellerSession seller = sessionRepository.findByToken(token).get();
+		// Seller existingSeller=
+
 		return null;
 	}
 
@@ -71,6 +94,18 @@ public class SellerServiceImpl implements SellerService {
 
 	@Override
 	public Seller deleteSellerbyId(Integer sellerId, String token) throws SellerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SessionDTO updateSellerPassword(SellerDTO sellerdto, String Token) throws SellerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Seller updateSeller(Seller seller, String token) throws SellerException {
 		// TODO Auto-generated method stub
 		return null;
 	}
