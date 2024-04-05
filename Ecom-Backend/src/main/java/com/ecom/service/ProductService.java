@@ -1,5 +1,6 @@
 package com.ecom.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class ProductService {
 		
 		Product oldP= productRepo.findById(pid).orElseThrow(()->new ResourceNotFoundException(+pid+" product not found "));
 		
-		oldP.setProduct_imageName(newP.getProduct_imageName());
+		oldP.setProduct_imageName(newP.getProduct_imageName().getBytes());
 		oldP.setProduct_name(newP.getProduct_name());
 		oldP.setLive(newP.isLive());
 		oldP.setStock(newP.isStock());
@@ -110,7 +111,7 @@ public class ProductService {
 		p.setLive(pDao.isLive());
 		p.setStock(pDao.isStock());
 		p.setProduct_desc(pDao.getProduct_desc());
-		p.setProduct_imageName(pDao.getProduct_imageName());
+		p.setProduct_imageName(pDao.getProduct_imageName().getBytes());
 		p.setProduct_prize(pDao.getProduct_prize());
 		p.setProduct_quantity(pDao.getProduct_quantity());
 		return p;
@@ -122,7 +123,7 @@ public class ProductService {
 		pDao.setLive(product.isLive());
 		pDao.setStock(product.isStock());
 		pDao.setProduct_desc(product.getProduct_desc());
-		pDao.setProduct_imageName(product.getProduct_imageName());
+		pDao.setProduct_imageName(Arrays.toString(product.getProduct_imageName()));
 		pDao.setProduct_prize(product.getProduct_prize());
 		pDao.setProduct_quantity(product.getProduct_quantity());
 		
