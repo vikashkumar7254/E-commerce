@@ -19,9 +19,11 @@ public class SellerSession {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 
-	private Integer sessionId;
+	private String sellerId;
 
 	private String token;
+	
+
 
 	private String userType;
 

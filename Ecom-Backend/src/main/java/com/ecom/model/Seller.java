@@ -21,7 +21,7 @@ public class Seller {
 
 	@Id
 	@GeneratedValue(strategy = jakarta.persistence.GenerationType.AUTO)
-	private Integer sellerId;
+	private String sellerId;
 
 	@NotNull(message = "Please enter the first name")
 	@Pattern(regexp = "[A-Za-z\\s]+", message = "First Name should contains alphabets only")
@@ -36,7 +36,7 @@ public class Seller {
 
 	@NotNull(message = " Please Enter Your Mobile Number")
 	@Pattern(regexp = "[6789]{1}[0-9]{9}", message = "Enter a valid Mobile Number")
-	private Integer mobile;
+	private String mobile;
 
 	@Email
 	private String emailId;
