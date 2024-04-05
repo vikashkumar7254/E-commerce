@@ -1,5 +1,7 @@
 package com.ecom.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,23 +18,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="product")
+@Table(name = "product")
 public class Product {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="productId")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "productId")
 	private int productId;
 	private String product_name;
-	private double product_prize; 
+	private double product_prize;
 	private boolean stock;
 	private int product_quantity;
 	private boolean live;
-	private String product_imageName;  
+	private String product_imageName;
 	private String product_desc;
-	@ManyToOne(fetch= FetchType.EAGER)
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Categories categories;
 
-	
-	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonIgnore
+	private Seller seller;
 
 }

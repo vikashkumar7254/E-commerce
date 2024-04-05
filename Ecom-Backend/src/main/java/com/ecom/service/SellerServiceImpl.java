@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ecom.dao.SellerDAO;
 import com.ecom.dto.SellerDTO;
 import com.ecom.dto.SessionDTO;
 import com.ecom.exception.LoginException;
@@ -26,12 +25,7 @@ public class SellerServiceImpl implements SellerService {
 	private LoginLogoutService loginLogoutService;
 
 	@Autowired
-	private SellerDAO sellerDao;
-
-	@Autowired
 	private SessionRepository sessionRepository;
-
-	private SellerDAO sessionDao;
 
 	@Override
 	public Seller addSeller(Seller seller) {
@@ -81,21 +75,54 @@ public class SellerServiceImpl implements SellerService {
 		}
 		loginLogoutService.checkTokenStatus(token);
 		SellerSession seller = sessionRepository.findByToken(token).get();
-		// Seller existingSeller=
-
-		return null;
+		Seller existingSeller = sellerRepository.findById(seller.getSellerId())
+				.orElseThrow(() -> new SellerException("Seller not found with this ID"));
+		return existingSeller;
 	}
 
 	@Override
 	public Seller updateSellermobile(SellerDTO sellerdto, String token) throws SellerException {
-		// TODO Auto-generated method stub
-		return null;
+		if (token.contains("Seller") == false) {
+			throw new LoginException("invalid session token for seller");
+		}
+		loginLogoutService.checkTokenStatus(token);
+
+		SellerSession seller = sessionRepository.findByToken(token).get();
+		Seller existingSeller = sellerRepository.findById(seller.getSellerId())
+				.orElseThrow(() -> new SellerException("Seller not found with this ID" + seller.getSellerId()));
+		if (existingSeller.getPassword().equals(sellerdto.getPassword())) {
+			existingSeller.setMobile(sellerdto.getMobile());
+			return sellerRepository.save(existingSeller);
+		} else {
+			throw new SellerException("problem during mobile update ");
+		}
+
 	}
 
 	@Override
 	public Seller deleteSellerbyId(Integer sellerId, String token) throws SellerException {
-		// TODO Auto-generated method stub
-		return null;
+		if (token.contains("seller") == false) {
+			throw new LoginException("Invalid session token for seller");
+		}
+		loginLogoutService.checkTokenStatus(token);
+		Optional<Seller> opt = sellerRepository.findById(sellerId);
+		if (opt.isPresent()) {
+
+			SellerSession seller = sessionRepository.findByToken(token).get();
+			Seller existingseller = opt.get();
+			if (seller.getSellerId() == existingseller.getSellerId()) {
+
+				SessionDTO session = new SessionDTO();
+				session.setToken(token);
+				loginLogoutService.LogoutSeller(session);
+
+				return existingseller;
+			} else {
+				throw new SellerException("Verification Error in deleting seller account");
+			}
+		} else
+			throw new SellerException("Seller not found for this ID: " + sellerId);
+
 	}
 
 	@Override
